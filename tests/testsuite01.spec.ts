@@ -12,17 +12,35 @@ import { CreateBillsChooseInReservation } from './pages/create-bills-choose-in-r
 
 
 test.describe('Test suite 01', () => {
-test('succesfull login 01', async ({ page }) => {
-  const loginPage = new LoginPage(page);
+
+  test.beforeEach(async ({ page }) => {
+    console.log('Login user before each test');
+    const loginpage = new LoginPage(page);
+    await loginpage.goto();
+    await loginpage.performLogin(`${process.env.TEST_USERNAME}`,`${process.env.TEST_PASSWORD}`);
+  });
+  test('successfull login 01', async ({ page }) => {
+  
   const dashboardPage = new DashboardPage(page);
-  await loginPage.goto();
-  await loginPage.performLogin(`${process.env.TEST_USERNAME}`, `${process.env.TEST_PASSWORD}`)
+  
   await expect(page.getByRole('heading', { name: 'Tester Hotel Overview' })).toBeVisible();
   await dashboardPage.performLogout();
   await expect(page.getByRole('heading', { name: 'Login' })).toBeVisible();
-  await page.waitForTimeout(5000);
+  
 
 });
+
+test('create bill', async ({ page }) => {
+  
+  await page.locator('#app > div > div > div:nth-child(3) > a').click();
+  await page.getByRole('link', { name: 'Create Bill' }).click();
+  await page.getByRole('spinbutton').click();
+  await page.getByRole('spinbutton').fill('5000');
+  await page.getByText('Save').click();
+  await page.getByRole('link', { name: 'Back' }).click();
+  
+});
+
 
 
   });
